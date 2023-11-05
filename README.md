@@ -1,0 +1,2 @@
+# rightsizing
+Kubernetes rightsizing exercises
