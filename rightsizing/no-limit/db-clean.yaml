@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-clean-deployment
+  namespace: distributed-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-clean-app
+  template:
+    metadata:
+      labels:
+        app: db-clean-app
+    spec:
+      priorityClassName: low-priority
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: dedicated
+                operator: In
+                values:
+                - test
+      containers:
+      - name: consumer
+        image: polinux/stress
+        resources:
+          requests:
+            memory: "200Mi"
+            cpu: "100m"
+          limits:
+            memory: "500Mi"
+            cpu: "200m"
+        command: ["stress"]
+        args:
+          - "--vm"
+          - "1"
+          - "--vm-bytes"
+          - "400M" # This should match the memory request or be lower to avoid OOM kill if you're not setting limits.
+          - "--vm-keep"
