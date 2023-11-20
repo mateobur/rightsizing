@@ -22,9 +22,14 @@ spec:
                     values:
                     - distributed-db
               topologyKey: "kubernetes.io/hostname"
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
       containers:
       - name: db-monitor-agent
         image: prom/node-exporter:v1.2.2
         ports:
         - containerPort: 9100
           protocol: TCP
+
